@@ -1,0 +1,28 @@
+/* Regular */
+
+@font-face {
+    font-family: "Bounded";
+    src: 
+        url("../fonts/Bounded/regular/Bounded-Regular.woff2") format("woff2"),
+        url("../fonts/Bounded/regular/Bounded-Regular.woff") format("woff"),
+        url("../fonts/Bounded/regular/Bounded-Regular.ttf") format("truetype"),
+        url("../fonts/Bounded/regular/Bounded-Regular.eot") format("eot");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/* Bold */
+
+@font-face {
+    font-family: "Bounded";
+    src: 
+        url("../fonts/Bounded/black/Bounded-Black.woff2") format("woff2"),
+        url("../fonts/Bounded/black/Bounded-Black.woff") format("woff"),
+        url("../fonts/Bounded/black/Bounded-Black.ttf") format("truetype"),
+        url("../fonts/Bounded/black/Bounded-Black.eot") format("eot");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
