@@ -7,4 +7,15 @@ const defaultTag : Record<ATextClassName, ATextTag> = {
     tagText: "p"
 }
 
-export funtion Text({ })
+export function Text({ tag, className = "mainText", color, align, children }: ATextProps) {
+    return (
+        <AStyledText
+            as={tag ?? defaultTag[className]}
+            $variant={className}
+            $align={align}
+            $color={color}
+        >
+            {children}
+        </AStyledText>
+    )
+}
