@@ -1,21 +1,28 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Text } from '../components/atoms/A-text/A-text'
 import { fetchProject } from '../lib/projectsApi'
-import { AppShell } from '../App.styles'
+import glow from '../assets/glow.svg'
+import plus from '../assets/plus.svg'
 import {
-    Layout,
-    Gallery,
-    GalleryItem,
-    GalleryImage,
-    GalleryCaption,
-    Aside,
+    Page,
+    Glow,
+    Content,
+    BackButton,
+    Columns,
+    InfoCard,
+    InfoTop,
+    Title,
+    Description,
     TagRow,
     Tag,
     Dropdown,
     DropdownSummary,
+    DropdownList,
     DropdownItem,
-    BackLink,
+    Gallery,
+    GalleryItem,
+    GalleryImage,
+    GalleryCaption,
     StateBox,
 } from './ProjectPage.styles'
 import type { Project } from '../types/project'
@@ -44,57 +51,72 @@ export function ProjectPage() {
     }, [id])
 
     return (
-        <AppShell>
-            <BackLink type="button" onClick={() => navigate('/')}>
-                ← К проектам
-            </BackLink>
+        <Page>
+            <Glow src={glow} alt="" aria-hidden="true" />
 
-            {loading && <StateBox>Загружаю проект...</StateBox>}
+            <Content>
+                <BackButton type="button" onClick={() => navigate('/')}>
+                    К карте сайта
+                </BackButton>
 
-            {!loading && !project && <StateBox>Проект не найден</StateBox>}
+                {loading && <StateBox>Загружаю проект...</StateBox>}
 
-            {!loading && project && (
-                <Layout>
-                    <Gallery>
-                        {project.images.map((image) => (
-                            <GalleryItem key={image.id}>
-                                <GalleryImage src={image.url} alt={image.caption || project.title} loading="lazy" />
-                                {image.caption && <GalleryCaption>{image.caption}</GalleryCaption>}
-                            </GalleryItem>
-                        ))}
-                    </Gallery>
+                {!loading && !project && <StateBox>Проект не найден</StateBox>}
 
-                    <Aside>
-                        <Text tag="h1" className="heading2">{project.title}</Text>
+                {!loading && project && (
+                    <Columns>
+                        <InfoCard>
+                            <InfoTop>
+                                <Title>{project.title}</Title>
 
-                        {project.tags.length > 0 && (
-                            <TagRow>
-                                {project.tags.map((tag) => (
-                                    <Tag key={tag}>{tag}</Tag>
-                                ))}
-                            </TagRow>
-                        )}
+                                {project.description && <Description>{project.description}</Description>}
 
-                        <Text className="mainText" color="#c9c9cf">{project.description}</Text>
+                                {project.tags.length > 0 && (
+                                    <TagRow>
+                                        {project.tags.map((tag) => (
+                                            <Tag key={tag}>{tag}</Tag>
+                                        ))}
+                                    </TagRow>
+                                )}
+                            </InfoTop>
 
-                        {project.links.length > 0 && (
-                            <Dropdown>
-                                <DropdownSummary>
-                                    Ссылки по проекту
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                        <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                </DropdownSummary>
-                                {project.links.map((link) => (
-                                    <DropdownItem key={link.id} href={link.url} target="_blank" rel="noreferrer">
-                                        {link.label}
-                                    </DropdownItem>
-                                ))}
-                            </Dropdown>
-                        )}
-                    </Aside>
-                </Layout>
-            )}
-        </AppShell>
+                            {project.links.length > 0 && (
+                                <Dropdown>
+                                    <DropdownSummary>
+                                        Процесс создания
+                                        <img src={plus} alt="" aria-hidden="true" />
+                                    </DropdownSummary>
+                                    <DropdownList>
+                                        {project.links.map((link) => (
+                                            <DropdownItem
+                                                key={link.id}
+                                                href={link.url}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                            >
+                                                {link.label}
+                                            </DropdownItem>
+                                        ))}
+                                    </DropdownList>
+                                </Dropdown>
+                            )}
+                        </InfoCard>
+
+                        <Gallery>
+                            {project.images.map((image) => (
+                                <GalleryItem key={image.id}>
+                                    <GalleryImage
+                                        src={image.url}
+                                        alt={image.caption || project.title}
+                                        loading="lazy"
+                                    />
+                                    {image.caption && <GalleryCaption>{image.caption}</GalleryCaption>}
+                                </GalleryItem>
+                            ))}
+                        </Gallery>
+                    </Columns>
+                )}
+            </Content>
+        </Page>
     )
 }
