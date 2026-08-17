@@ -53,6 +53,26 @@ export const OrbitWrapper = styled.div<{ $size: number }>`
   z-index: 1;
 `;
 
+export const OrbitButton = styled.button`
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 4px;
+  }
+`;
+
 export const OrbitImage = styled.img`
   display: block;
   width: 100%;
@@ -60,4 +80,21 @@ export const OrbitImage = styled.img`
   object-fit: cover;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+`;
+
+export const OrbitIndex = styled.span`
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  color: #111111;
+  background: #ffffff;
+  border-radius: 999px;
+  pointer-events: none;
 `;

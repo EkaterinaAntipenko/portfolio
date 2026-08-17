@@ -1,5 +1,6 @@
 export interface OrbitItem {
     id: string;
+    index: number;
     src: string;
     alt: string;
     radius: number;
@@ -15,4 +16,5 @@ export interface OrbitSystemProps {
         size?: number;
     };
     items: OrbitItem[];
+    onSelect?: (id: string, index: number) => void;
 }

@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { OrbitContainer, OrbitRing, CenterImage, OrbitWrapper, OrbitImage } from './B-orbit-system.styles';
+import { OrbitContainer, OrbitRing, CenterImage, OrbitWrapper, OrbitButton, OrbitImage, OrbitIndex } from './B-orbit-system.styles';
 import type { OrbitSystemProps } from './B-orbit-system.types';
 
-export function OrbitSystem({ centerImage, items }: OrbitSystemProps) {
+export function OrbitSystem({ centerImage, items, onSelect }: OrbitSystemProps) {
     const rings = useMemo(
         () => Array.from(new Set(items.map((item) => item.radius))),
         [items]
@@ -30,7 +30,16 @@ export function OrbitSystem({ centerImage, items }: OrbitSystemProps) {
                         '--delay': `${(-(item.startAngle ?? 0) / 360) * item.duration}s`,
                     } as React.CSSProperties}
                 >
-                    <OrbitImage src={item.src} alt={item.alt} />
+                    <OrbitButton
+                        type="button"
+                        data-id={item.id}
+                        data-index={item.index}
+                        aria-label={item.alt}
+                        onClick={() => onSelect?.(item.id, item.index)}
+                    >
+                        <OrbitImage src={item.src} alt={item.alt} />
+                        <OrbitIndex>{item.index}</OrbitIndex>
+                    </OrbitButton>
                 </OrbitWrapper>
             ))}
         </OrbitContainer>
