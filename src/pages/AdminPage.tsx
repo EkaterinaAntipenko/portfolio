@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Text } from '../components/atoms/A-text/A-text'
+import { UsersPanel } from '../components/blocks/B-users-panel/B-users-panel'
 import { fetchProjects, saveProject, deleteProject, createEmptyProject } from '../lib/projectsApi'
+import { getCurrentUser, signOut } from '../lib/auth'
 import { isSupabaseConfigured } from '../config'
 import { AppShell } from '../App.styles'
 import {
@@ -26,8 +28,10 @@ import {
     Thumb,
 } from './AdminPage.styles'
 import type { Project, ProjectImage, ProjectLink } from '../types/project'
+import type { AdminUser } from '../types/admin'
 
 type Status = { kind: 'info' | 'success' | 'error'; message: string } | null
+type Tab = 'projects' | 'users'
 
 function reorder<T extends { sortOrder: number }>(items: T[], from: number, to: number): T[] {
     if (to < 0 || to >= items.length) return items
@@ -43,19 +47,41 @@ export function AdminPage() {
     const [draft, setDraft] = useState<Project | null>(null)
     const [status, setStatus] = useState<Status>(null)
     const [saving, setSaving] = useState(false)
+    const [currentUser, setCurrentUser] = useState<AdminUser | null>(null)
+    const [checking, setChecking] = useState(true)
+    const [tab, setTab] = useState<Tab>('projects')
     const navigate = useNavigate()
 
     useEffect(() => {
-        fetchProjects()
-            .then((loaded) => {
-                setProjects(loaded)
-                if (loaded.length) {
-                    setSelectedId(loaded[0].id)
-                    setDraft(loaded[0])
-                }
-            })
-            .catch(() => setStatus({ kind: 'error', message: 'Не удалось загрузить проекты' }))
-    }, [])
+        let cancelled = false
+
+        async function boot() {
+            const user = await getCurrentUser().catch(() => null)
+            if (cancelled) return
+
+            if (!user) {
+                navigate('/login')
+                return
+            }
+
+            setCurrentUser(user)
+            setChecking(false)
+
+            const loaded = await fetchProjects().catch(() => [])
+            if (cancelled) return
+
+            setProjects(loaded)
+            if (loaded.length) {
+                setSelectedId(loaded[0].id)
+                setDraft(loaded[0])
+            }
+        }
+
+        boot()
+        return () => {
+            cancelled = true
+        }
+    }, [navigate])
 
     const select = (project: Project) => {
         setSelectedId(project.id)
@@ -127,16 +153,42 @@ export function AdminPage() {
         }
     }
 
+    if (checking || !currentUser) {
+        return (
+            <AppShell>
+                <TopBar>
+                    <Text className="mainText" color="#8a8a92">Проверяю доступ...</Text>
+                </TopBar>
+            </AppShell>
+        )
+    }
+
     return (
         <AppShell>
             <TopBar>
-                <Text tag="h1" className="heading2">Админка проектов</Text>
+                <Text tag="h1" className="heading2">Админка</Text>
                 <Row>
+                    <SmallButton type="button" onClick={() => setTab('projects')}>Проекты</SmallButton>
+                    <SmallButton type="button" onClick={() => setTab('users')}>Пользователи</SmallButton>
                     <SmallButton type="button" onClick={() => navigate('/')}>На сайт</SmallButton>
-                    <PrimaryButton type="button" onClick={addProject}>Добавить проект</PrimaryButton>
+                    <SmallButton
+                        type="button"
+                        onClick={async () => {
+                            await signOut()
+                            navigate('/login')
+                        }}
+                    >
+                        Выйти ({currentUser.name || currentUser.email})
+                    </SmallButton>
+                    {tab === 'projects' && (
+                        <PrimaryButton type="button" onClick={addProject}>Добавить проект</PrimaryButton>
+                    )}
                 </Row>
             </TopBar>
 
+            {tab === 'users' && <UsersPanel currentUser={currentUser} />}
+
+            {tab === 'projects' && (
             <AdminLayout>
                 <Sidebar>
                     {projects.map((project, index) => (
@@ -320,6 +372,7 @@ export function AdminPage() {
                     </Panel>
                 )}
             </AdminLayout>
+            )}
         </AppShell>
     )
 }

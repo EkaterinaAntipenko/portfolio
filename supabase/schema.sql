@@ -38,6 +38,34 @@ create policy "public read projects" on projects for select using (true);
 create policy "public read images" on project_images for select using (true);
 create policy "public read links" on project_links for select using (true);
 
-create policy "auth write projects" on projects for all to authenticated using (true) with check (true);
-create policy "auth write images" on project_images for all to authenticated using (true) with check (true);
-create policy "auth write links" on project_links for all to authenticated using (true) with check (true);
+create table if not exists admin_users (
+    id uuid primary key references auth.users(id) on delete cascade,
+    name text not null default '',
+    email text not null unique,
+    status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
+    approval_token text,
+    created_at timestamptz default now()
+);
+
+alter table admin_users enable row level security;
+
+create or replace function is_approved_admin()
+returns boolean
+language sql
+security definer
+stable
+as $$
+    select exists (
+        select 1 from admin_users
+        where id = auth.uid() and status = 'approved'
+    );
+$$;
+
+create policy "auth write projects" on projects for all to authenticated using (is_approved_admin()) with check (is_approved_admin());
+create policy "auth write images" on project_images for all to authenticated using (is_approved_admin()) with check (is_approved_admin());
+create policy "auth write links" on project_links for all to authenticated using (is_approved_admin()) with check (is_approved_admin());
+
+create policy "read own profile" on admin_users for select to authenticated using (id = auth.uid() or is_approved_admin());
+create policy "insert own profile" on admin_users for insert to authenticated with check (id = auth.uid() and status = 'pending');
+create policy "admins update profiles" on admin_users for update to authenticated using (is_approved_admin()) with check (is_approved_admin());
+create policy "admins delete profiles" on admin_users for delete to authenticated using (is_approved_admin());
