@@ -2,19 +2,27 @@ import {AHeader, ANav, ANavItem, ADiscussButton} from "./B-header.styles"
 import type {HeaderProps, NavItem} from "./B-header.types"
 
 const defaultItems : NavItem[] = [
-    { label: "Обо мне", href: "#about" },
-    { label: "Стек", href: "#stack" },
-    { label: "Резюме", href: "#resume" },
-    { label: "Опыт", href: "#experience" },
-    { label: "Инспо", href: "#inspo" }
+    { label: "Обо мне", targetId: "about" },
+    { label: "Стек", targetId: "stack" },
+    { label: "Резюме", targetId: "resume" },
+    { label: "Опыт", targetId: "experience" },
+    { label: "Инспо", targetId: "inspo" }
 ]
+
+function scrollToSection(targetId: string) {
+    document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth" })
+}
 
 export function Header({ items = defaultItems, onDiscuss }: HeaderProps) {
     return (
         <AHeader>
             <ANav>
                 {items.map((item) => (
-                    <ANavItem key={item.href} href={item.href}>
+                    <ANavItem
+                        key={item.targetId}
+                        type="button"
+                        onClick={() => scrollToSection(item.targetId)}
+                    >
                         {item.label}
                     </ANavItem>
                 ))}

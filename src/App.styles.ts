@@ -10,12 +10,7 @@ export const AppShell = styled.div`
 `;
 
 export const Hero = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 7rem 2.5rem;
-
-  @media (max-width: 768px) {
-    padding: 4rem 1.25rem;
-  }
+  position: relative;
+  height: calc(100vh - 6.5rem);
+  overflow: hidden;
 `;

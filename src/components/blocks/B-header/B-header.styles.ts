@@ -22,7 +22,9 @@ export const ANav = styled.nav`
   gap: 0.5rem;
 `;
 
-export const ANavItem = styled.a`
+export const ANavItem = styled.button`
+  cursor: pointer;
+  border: none;
   padding: 0.625rem 1.125rem;
   font-size: 0.9375rem;
   color: #c9c9cf;

@@ -1,6 +1,6 @@
 export interface NavItem {
     label: string;
-    href: string;
+    targetId: string;
 }
 
 export interface HeaderProps {
